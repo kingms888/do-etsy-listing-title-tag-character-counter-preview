@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Etsy Listing Title & Tag Character Counter & Preview | Etsy SEO Tools</title>
+    <meta name="description" content="Free, pure frontend Etsy listing title and tag character counter with live preview. Also includes CSV/JSON validator, regex tester, and developer tools for Etsy sellers.">
+    <meta name="keywords" content="etsy listing title character counter, etsy seo tools, csv json validator, developer regex tester, etsy sellers, developer tools, csv/json tools, etsy listing title & tag character counter & preview">
+    <meta name="author" content="EtsySellerTools">
+    <meta property="og:title" content="Etsy Listing Title & Tag Character Counter & Preview">
+    <meta property="og:description" content="Count characters, preview titles & tags, validate CSV/JSON, test regex. All in your browser.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Etsy Listing Title & Tag Character Counter & Preview">
+    <meta name="twitter:description" content="Count characters, preview titles & tags, validate CSV/JSON, test regex. All in your browser.">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f7f8fa;
+            color: #222;
+            line-height: 1.5;
+            padding: 16px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            padding: 24px 20px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #1a1a2e;
+        }
+        .subhead {
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 700px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: #f0f2f5;
+            border-radius: 16px;
+            padding: 18px 16px;
+            transition: background 0.1s;
+        }
+        .card label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        .card textarea, .card input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            resize: vertical;
+            font-family: inherit;
+            transition: border 0.15s;
+        }
+        .card textarea:focus, .card input[type="text"]:focus {
+            border-color: #2a6df4;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(42,109,244,0.15);
+        }
+        .char-counter {
+            font-size: 0.9rem;
+            margin-top: 6px;
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+        }
+        .char-counter .count {
+            font-weight: 600;
+        }
+        .char-counter .max {
+            color: #888;
+        }
+        .warning {
+            color: #b33;
+            font-weight: 500;
+        }
+        .preview-box {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            border: 1px solid #e2e6ee;
+        }
+        .preview-box .preview-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        .preview-box .preview-tags {
+            color: #2a6df4;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 28px 0 12px 0;
+            border-bottom: 2px solid #eef0f4;
+            padding-bottom: 6px;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 700px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .tool-card {
+            background: #f9fafc;
+            border-radius: 16px;
+            padding: 18px 16px;
+            border: 1px solid #e9ecf2;
+        }
+        .tool-card h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .tool-card textarea, .tool-card input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            font-family: monospace;
+        }
+        .tool-card .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #eef2f6;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+        .btn {
+            background: #2a6df4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 8px;
+        }
+        .btn:hover {
+            background: #1a5bd4;
+        }
+        .ad-placeholder {
+            background: #f0f4fe;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 28px 0 20px 0;
+            border: 1px dashed #b3c9ff;
+            color: #2a4a8a;
+        }
+        .ad-placeholder p {
+            font-size: 0.95rem;
+        }
+        .ad-placeholder .ad-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6a7a9a;
+            margin-bottom: 6px;
+        }
+        .affiliate-resources {
+            background: #f9f3e9;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e5d9c8;
+        }
+        .affiliate-resources h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .affiliate-resources ul {
+            list-style: disc;
+            padding-left: 20px;
+            color: #3a3a3a;
+        }
+        .affiliate-resources li {
+            margin-bottom: 4px;
+        }
+        .privacy-note {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 28px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e6ee;
+            text-align: center;
+        }
+        .footer-meta {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .tag-item {
+            background: #e6edf9;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            color: #1a3a7a;
+        }
+        .small-note {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .mt-2 { margin-top: 12px; }
+        .mb-1 { margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>✂️ Etsy Listing Title & Tag Counter</h1>
+        <div class="subhead">Live character count, preview, and SEO tools for Etsy sellers</div>
+    </header>
+
+    <!-- Main tool: Title & Tags -->
+    <div class="grid-2">
+        <div class="card">
+            <label for="titleInput">Listing Title</label>
+            <textarea id="titleInput" rows="2" placeholder="Enter your Etsy listing title..." maxlength="140">Handmade Wooden Serving Board – Rustic Kitchen Gift</textarea>
+            <div class="char-counter">
+                <span class="count" id="titleCount">0</span>
+                <span class="max">/ 140</span>
+            </div>
+            <div class="preview-box">
+                <div class="preview-title" id="titlePreview">Handmade Wooden Serving Board – Rustic Kitchen Gift</div>
+                <div class="small-note">Live preview</div>
+            </div>
+        </div>
+        <div class="card">
+            <label for="tagsInput">Tags (comma separated)</label>
+            <textarea id="tagsInput" rows="2" placeholder="wooden serving board, rustic kitchen decor, housewarming gift, handmade wooden tray, serving platter, kitchen gift, wooden gift, farmhouse style, cutting board, hostess gift">wooden serving board, rustic kitchen decor, housewarming gift, handmade wooden tray, serving platter, kitchen gift, wooden gift, farmhouse style, cutting board, hostess gift</textarea>
+            <div class="char-counter">
+                <span class="count" id="tagsCount">0</span>
+                <span class="max">/ 500 (total)</span>
+            </div>
+            <div class="preview-box">
+                <div class="preview-tags" id="tagsPreview">wooden serving board, rustic kitchen decor, housewarming gift, handmade wooden tray, serving platter, kitchen gift, wooden gift, farmhouse style, cutting board, hostess gift</div>
+                <div class="tag-list" id="tagList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad placeholder -->
+    <div class="ad-placeholder" aria-label="Advertisement placeholder">
+        <div class="ad-label">Sponsored</div>
+        <p><strong>📦 Etsy Seller Tool Kit</strong> — Optimize your listings with Marmalead & eRank. <span style="color:#2a6df4;">[Affiliate link placeholder]</span></p>
+        <p style="font-size:0.8rem; margin-top:4px;">Ads help keep this tool free.</p>
+    </div>
+
+    <!-- Additional developer tools -->
+    <div class="section-title">🛠 Developer & Seller Utilities</div>
+    <div class="tool-grid">
+        <div class="tool-card">
+            <h3>CSV / JSON Validator</h3>
+            <textarea id="csvJsonInput" rows="3" placeholder='Paste CSV or JSON...'>{"title":"test","tags":"a,b,c"}</textarea>
+            <button class="btn" id="validateBtn">Validate</button>
+            <div class="result" id="validationResult">✅ Valid JSON</div>
+        </div>
+        <div class="tool-card">
+            <h3>Regex Tester</h3>
+            <input type="text" id="regexPattern" placeholder="Pattern, e.g. [A-Za-z]+" value="wooden|rustic">
+            <textarea id="regexTestInput" rows="2" placeholder="Test string...">Handmade Wooden Serving Board – Rustic</textarea>
+            <button class="btn" id="regexTestBtn">Test Regex</button>
+            <div class="result" id="regexResult">Matches: wooden, rustic</div>
+        </div>
+    </div>
+
+    <!-- Affiliate / resource section -->
+    <div class="affiliate-resources">
+        <h3>📌 Recommended for Etsy Sellers</h3>
+        <ul>
+            <li><strong>eRank</strong> – Keyword research & SEO tools (affiliate link placeholder)</li>
+            <li><strong>Marmalead</strong> – Etsy SEO analytics (affiliate link placeholder)</li>
+            <li><strong>Placeit</strong> – Mockup generator for listings (affiliate link placeholder)</li>
+            <li><strong>Printful</strong> – Print-on-demand integration (affiliate link placeholder)</li>
+        </ul>
+        <p class="small-note" style="margin-top:8px;">Some links may be affiliate links. We only recommend tools we find useful.</p>
+    </div>
+
+    <!-- Privacy note -->
+    <div class="privacy-note">
+        <p>🔒 Privacy: Events may be counted anonymously for product improvement. No personal data collected. <br>We use <code>window.ORGANISM_METRICS_ENDPOINT</code> if configured.</p>
+    </div>
+    <div class="footer-meta">
+        Etsy Listing Title & Tag Character Counter & Preview • Free online tool • Updated 2025
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --- Core counter & preview ---
+        const titleInput = document.getElementById('titleInput');
+        const tagsInput = document.getElementById('tagsInput');
+        const titleCount = document.getElementById('titleCount');
+        const tagsCount = document.getElementById('tagsCount');
+        const titlePreview = document.getElementById('titlePreview');
+        const tagsPreview = document.getElementById('tagsPreview');
+        const tagList = document.getElementById('tagList');
+
+        function updateTitle() {
+            const val = titleInput.value;
+            const len = val.length;
+            titleCount.textContent = len;
+            titlePreview.textContent = val || '✨ Preview will appear here';
+            // visual warning if near limit
+            if (len > 130) {
+                titleCount.style.color = '#b33';
+            } else {
+                titleCount.style.color = '#222';
+            }
+        }
+
+        function updateTags() {
+            const val = tagsInput.value;
+            const len = val.length;
+            tagsCount.textContent = len;
+            tagsPreview.textContent = val || '✨ Tags preview';
+            // build tag chips
+            const tags = val.split(',').map(t => t.trim()).filter(t => t.length > 0);
+            tagList.innerHTML = tags.map(t => `<span class="tag-item">${t}</span>`).join('');
+            if (len > 450) {
+                tagsCount.style.color = '#b33';
+            } else {
+                tagsCount.style.color = '#222';
+            }
+        }
+
+        titleInput.addEventListener('input', updateTitle);
+        tagsInput.addEventListener('input', updateTags);
+        // initial
+        updateTitle();
+        updateTags();
+
+        // --- CSV/JSON Validator ---
+        const validateBtn = document.getElementById('validateBtn');
+        const csvJsonInput = document.getElementById('csvJsonInput');
+        const validationResult = document.getElementById('validationResult');
+
+        validateBtn.addEventListener('click', function() {
+            const text = csvJsonInput.value.trim();
+            if (!text) {
+                validationResult.textContent = '⚠️ Please enter some text.';
+                validationResult.style.color = '#b33';
+                return;
+            }
+            // try JSON first
+            try {
+                JSON.parse(text);
+                validationResult.textContent = '✅ Valid JSON';
+                validationResult.style.color = '#1a7a3a';
+                return;
+            } catch (e) {
+                // not JSON, try CSV heuristic
+                const lines = text.split('\n').filter(l => l.trim() !== '');
+                if (lines.length < 1) {
+                    validationResult.textContent = '⚠️ Empty or invalid format.';
+                    validationResult.style.color = '#b33';
+                    return;
+                }
+                // simple CSV check: at least one comma and consistent columns?
+                const firstLine = lines[0];
+                if (firstLine.includes(',')) {
+                    const colCount = firstLine.split(',').length;
+                    const consistent = lines.every(line => line.split(',').length === colCount);
+                    if (consistent) {
+                        validationResult.textContent = `✅ Looks like valid CSV (${lines.length} rows, ${colCount} columns)`;
+                        validationResult.style.color = '#1a7a3a';
+                    } else {
+                        validationResult.textContent = '⚠️ CSV with inconsistent columns.';
+                        validationResult.style.color = '#b33';
+                    }
+                } else {
+                    validationResult.textContent = '⚠️ Not JSON and no commas found. Not valid CSV.';
+                    validationResult.style.color = '#b33';
+                }
+            }
+        });
+
+        // --- Regex Tester ---
+        const regexTestBtn = document.getElementById('regexTestBtn');
+        const regexPattern = document.getElementById('regexPattern');
+        const regexTestInput = document.getElementById('regexTestInput');
+        const regexResult = document.getElementById('regexResult');
+
+        regexTestBtn.addEventListener('click', function() {
+            const pattern = regexPattern.value.trim();
+            const testStr = regexTestInput.value;
+            if (!pattern) {
+                regexResult.textContent = '⚠️ Please enter a regex pattern.';
+                regexResult.style.color = '#b33';
+                return;
+            }
+            try {
+                const regex = new RegExp(pattern, 'gi');
+                const matches = testStr.match(regex);
+                if (matches && matches.length > 0) {
+                    const unique = [...new Set(matches)];
+                    regexResult.textContent = `✅ Matches: ${unique.join(', ')}`;
+                    regexResult.style.color = '#1a7a3a';
+                } else {
+                    regexResult.textContent = '❌ No matches found.';
+                    regexResult.style.color = '#b33';
+                }
+            } catch (e) {
+                regexResult.textContent = `⚠️ Invalid regex: ${e.message}`;
+                regexResult.style.color = '#b33';
+            }
+        });
+
+        // --- reportEvent function ---
+        window.reportEvent = function(name, payload) {
+            if (window.ORGANISM_METRICS_ENDPOINT && typeof window.ORGANISM_METRICS_ENDPOINT === 'string') {
+                try {
+                    fetch(window.ORGANISM_METRICS_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ event: name, data: payload || {}, timestamp: Date.now() }),
+                        keepalive: true
+                    }).catch(() => {}); // silently fail
+                } catch (e) {
+                    // ignore
+                }
+            }
+        };
+
+        // Report some basic usage events (only if endpoint configured)
+        // We'll report on tool interactions
+        validateBtn.addEventListener('click', function() {
+            reportEvent('csv_json_validate', {});
+        });
+        regexTestBtn.addEventListener('click', function() {
+            reportEvent('regex_test', {});
+        });
+        // Also report page view
+        window.addEventListener('load', function() {
+            reportEvent('page_view', { tool: 'etsy_title_tag_counter' });
+        });
+
+        // Also report title/tag changes (debounced)
+        let reportTimer;
+        function reportChange(type) {
+            clearTimeout(reportTimer);
+            reportTimer = setTimeout(() => {
+                reportEvent('input_change', { field: type });
+            }, 2000);
+        }
+        titleInput.addEventListener('input', function() { reportChange('title'); });
+        tagsInput.addEventListener('input', function() { reportChange('tags'); });
+
+        console.log('Etsy Title & Tag Counter tool loaded. Privacy: anonymous events only if endpoint configured.');
+    })();
+</script>
+
+<section data-organism-discovery="hub" style="margin:32px auto 20px;max-width:1040px;padding:16px;border-top:1px solid #d9e2ec;color:#475569;font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <strong style="display:block;color:#0f172a;margin-bottom:6px">More free browser tools</strong>
+  <p style="margin:0 0 8px">This page is part of an autonomous micro-tool network. Explore the live tool directory and related utilities.</p>
+  <p style="margin:0"><a href="https://kingms888.github.io/do-digital-organism-index/" style="color:#0f766e;font-weight:700">Open the tool directory</a> </p>
+</section>
+</body>
+</html>
